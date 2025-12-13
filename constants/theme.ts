@@ -19,12 +19,23 @@ export const Colors = {
   },
   dark: {
     text: '#ECEDEE',
-    background: '#151718',
+    background: '#0A1F1C',
     tint: tintColorDark,
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },
+};
+
+// AQI Theme Colors
+export const AqiColors = {
+  background: '#0A1F1C',
+  card: '#0F2922',
+  cardBorder: '#1A3D32',
+  accent: '#22C55E',
+  textPrimary: '#FFFFFF',
+  textSecondary: '#9CA3AF',
+  textMuted: '#6B7280',
 };
 
 export const Fonts = Platform.select({
