@@ -37,23 +37,39 @@ function getAqiCategory(aqi: number): AqiCategory {
 
 export function useAqiData() {
   const [state, setState] = useState<AqiState>({
-    data: null, // Start with null
+    data: null,
     loading: true,
     error: null,
     lastUpdated: null,
     isOffline: false,
   });
+  
+  const [isConnected, setIsConnected] = useState(false);
 
   const clientRef = useRef<mqtt.MqttClient | null>(null);
   const connectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const subscribeToTopic = useCallback((client: mqtt.MqttClient) => {
+    client.subscribe(MQTT_TOPIC, { qos: 1 }, (err) => {
+      if (err) {
+        console.error('Subscription error:', err);
+        setState(prev => ({ ...prev, error: 'Failed to subscribe to sensor data' }));
+      } else {
+        console.log(`Subscribed to ${MQTT_TOPIC}`);
+      }
+    });
+  }, []);
+
   const connectToMqtt = useCallback(() => {
     try {
+      // Clean up existing connection
       if (clientRef.current) {
-        clientRef.current.end();
+        clientRef.current.end(true);
+        clientRef.current = null;
       }
 
       setState(prev => ({ ...prev, loading: true, error: null }));
+      setIsConnected(false);
 
       // Set a timeout to fall back to dummy data if connection takes too long
       connectionTimeoutRef.current = setTimeout(() => {
@@ -67,29 +83,41 @@ export function useAqiData() {
           lastUpdated: new Date(),
           isOffline: true,
         });
+        setIsConnected(false);
       }, CONNECTION_TIMEOUT_MS) as any;
 
       const client = mqtt.connect(MQTT_BROKER_URL, {
         clientId: `aqi_app_${Math.random().toString(16).substr(2, 8)}`,
-        keepalive: 60,
-        reconnectPeriod: 5000,
+        keepalive: 30,
+        reconnectPeriod: 3000,
+        connectTimeout: CONNECTION_TIMEOUT_MS,
+        clean: true,
       });
 
       clientRef.current = client;
 
       client.on('connect', () => {
         console.log('Connected to MQTT Broker');
-        if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
+        if (connectionTimeoutRef.current) {
+          clearTimeout(connectionTimeoutRef.current);
+          connectionTimeoutRef.current = null;
+        }
 
-        client.subscribe(MQTT_TOPIC, (err) => {
-          if (err) {
-            console.error('Subscription error:', err);
-            setState(prev => ({ ...prev, error: 'Failed to subscribe to sensor data' }));
-          } else {
-            console.log(`Subscribed to ${MQTT_TOPIC}`);
-          }
-        });
-        setState(prev => ({ ...prev, isOffline: false, error: null }));
+        setIsConnected(true);
+        subscribeToTopic(client);
+        
+        setState(prev => ({ 
+          ...prev, 
+          isOffline: false, 
+          error: null,
+          loading: !prev.data, // Only show loading if we don't have data yet
+        }));
+      });
+
+      client.on('reconnect', () => {
+        console.log('Reconnecting to MQTT Broker...');
+        setState(prev => ({ ...prev, isOffline: true }));
+        setIsConnected(false);
       });
 
       client.on('message', (topic, message) => {
@@ -100,20 +128,21 @@ export function useAqiData() {
             // Map raw sensor data to AqiData interface
             const aqi = raw.aqi || 0;
             const data: AqiData = {
-                device_id: 'sen55-mqtt-node', 
-                timestamp: new Date().toISOString(),
-                pm1_0: raw.pm1 || 0,
-                pm2_5: raw.pm2_5 || 0,
-                pm4_0: raw.pm4 || 0,
-                pm10: raw.pm10 || 0,
-                temperature: raw.temp || 0,
-                humidity: raw.rh || 0,
-                voc_index: raw.voc || 0,
-                nox_index: raw.nox || 0,
-                aqi: aqi,
-                aqi_category: getAqiCategory(aqi),
+              device_id: raw.device_id || 'sen55-mqtt-node', 
+              timestamp: new Date().toISOString(),
+              pm1_0: raw.pm1 ?? raw.pm1_0 ?? 0,
+              pm2_5: raw.pm2_5 ?? 0,
+              pm4_0: raw.pm4 ?? raw.pm4_0 ?? 0,
+              pm10: raw.pm10 ?? 0,
+              temperature: raw.temp ?? raw.temperature ?? 0,
+              humidity: raw.rh ?? raw.humidity ?? 0,
+              voc_index: raw.voc ?? raw.voc_index ?? 0,
+              nox_index: raw.nox ?? raw.nox_index ?? 0,
+              aqi: aqi,
+              aqi_category: getAqiCategory(aqi),
             };
 
+            // Update state immediately with new data
             setState({
               data,
               loading: false,
@@ -129,49 +158,59 @@ export function useAqiData() {
 
       client.on('error', (err) => {
         console.error('MQTT connection error:', err);
-        // Don't show error immediately, let the timeout handle fallback or show offline
+        setIsConnected(false);
         setState(prev => ({
           ...prev,
           loading: false,
-          // If we already have dummy data, keep it? 
-          // For now, if error, show dummy data if no data exists
-           data: prev.data || DUMMY_DATA,
-           error: 'MQTT Connection Error: ' + err.message,
-           isOffline: true,
+          data: prev.data || DUMMY_DATA,
+          error: 'MQTT Connection Error: ' + err.message,
+          isOffline: true,
         }));
       });
 
       client.on('offline', () => {
         console.log('MQTT Client Offline');
+        setIsConnected(false);
         setState(prev => ({ 
-            ...prev, 
-            isOffline: true,
-            data: prev.data || DUMMY_DATA // Show dummy data if offline
+          ...prev, 
+          isOffline: true,
+          data: prev.data || DUMMY_DATA,
         }));
+      });
+
+      client.on('close', () => {
+        console.log('MQTT Connection closed');
+        setIsConnected(false);
       });
 
     } catch (err) {
       console.error('MQTT setup error', err);
+      setIsConnected(false);
       setState(prev => ({ 
         ...prev, 
         loading: false, 
-        data: DUMMY_DATA, // Fallback
-        error: err instanceof Error ? err.message : 'Failed to connect' 
+        data: DUMMY_DATA,
+        error: err instanceof Error ? err.message : 'Failed to connect',
+        isOffline: true,
       }));
     }
-  }, []);
+  }, [subscribeToTopic]);
 
   const refresh = useCallback(() => {
-    // Reconnect logic
+    console.log('Manual refresh triggered');
     connectToMqtt();
   }, [connectToMqtt]);
 
   useEffect(() => {
     connectToMqtt();
+    
     return () => {
-      if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
+      if (connectionTimeoutRef.current) {
+        clearTimeout(connectionTimeoutRef.current);
+      }
       if (clientRef.current) {
-        clientRef.current.end();
+        clientRef.current.end(true);
+        clientRef.current = null;
         console.log('MQTT Disconnected');
       }
     };
@@ -179,6 +218,7 @@ export function useAqiData() {
 
   return {
     ...state,
+    isConnected,
     refresh,
   };
 }
@@ -189,8 +229,10 @@ export function getTimeSinceUpdate(lastUpdated: Date | null): string {
   
   const seconds = Math.floor((Date.now() - lastUpdated.getTime()) / 1000);
   
-  if (seconds < 60) return 'Just now';
+  if (seconds < 5) return 'Just now';
+  if (seconds < 60) return `${seconds}s ago`;
   if (seconds < 120) return '1 min ago';
   if (seconds < 3600) return `${Math.floor(seconds / 60)} mins ago`;
   return `${Math.floor(seconds / 3600)} hours ago`;
 }
+

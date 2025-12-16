@@ -1,10 +1,9 @@
 import { Tabs } from 'expo-router';
 import { Home, Settings } from 'lucide-react-native';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 
 import { HapticTab } from '@/components/haptic-tab';
-import { AqiColors } from '@/constants/theme';
+import { AqiColors, PoppinsFonts } from '@/constants/theme';
 
 export default function TabLayout() {
   return (
@@ -24,18 +23,14 @@ export default function TabLayout() {
         },
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: '500',
+          fontFamily: PoppinsFonts.medium,
         },
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => (
-            <View style={styles.iconContainer}>
-              <Home size={24} color={color} />
-            </View>
-          ),
+          tabBarIcon: ({ color }) => <Home size={24} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -45,21 +40,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Settings size={24} color={color} />,
         }}
       />
-      {/* Hide explore tab */}
-      <Tabs.Screen
-        name="explore"
-        options={{
-          href: null,
-        }}
-      />
     </Tabs>
   );
 }
 
-const styles = StyleSheet.create({
-  iconContainer: {
-    backgroundColor: 'rgba(34, 197, 94, 0.15)',
-    padding: 8,
-    borderRadius: 12,
-  },
-});

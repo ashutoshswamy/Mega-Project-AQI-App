@@ -1,13 +1,23 @@
 import { AqiGauge, MetricCard } from '@/components/aqi';
-import { AqiColors } from '@/constants/theme';
+import { AqiColors, PoppinsFonts } from '@/constants/theme';
 import { getTimeSinceUpdate, useAqiData } from '@/hooks/use-aqi-data';
 import { Cloud, Droplets, Flame, Thermometer, Wind } from 'lucide-react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
-  const { data, loading, error, isOffline, lastUpdated, refresh } = useAqiData();
+  const { data, loading, error, isOffline, lastUpdated, isConnected, refresh } = useAqiData();
+  const [timeSince, setTimeSince] = useState('Never');
+
+  // Update time since every second for live display
+  useEffect(() => {
+    const updateTime = () => setTimeSince(getTimeSinceUpdate(lastUpdated));
+    updateTime();
+    
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, [lastUpdated]);
 
   // Loading state
   if (loading && !data) {
@@ -41,8 +51,6 @@ export default function HomeScreen() {
   if (isOffline && data) {
     // Show data with offline indicator
   }
-
-  const timeSince = getTimeSinceUpdate(lastUpdated);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -178,6 +186,7 @@ const styles = StyleSheet.create({
     color: AqiColors.textSecondary,
     marginTop: 16,
     fontSize: 16,
+    fontFamily: PoppinsFonts.regular,
   },
   errorIcon: {
     fontSize: 48,
@@ -186,7 +195,7 @@ const styles = StyleSheet.create({
   errorTitle: {
     color: AqiColors.textPrimary,
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: PoppinsFonts.semiBold,
     marginBottom: 8,
   },
   errorText: {
@@ -194,6 +203,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 24,
+    fontFamily: PoppinsFonts.regular,
   },
   retryButton: {
     backgroundColor: AqiColors.accent,
@@ -203,7 +213,7 @@ const styles = StyleSheet.create({
   },
   retryText: {
     color: '#000',
-    fontWeight: '600',
+    fontFamily: PoppinsFonts.semiBold,
     fontSize: 16,
   },
 
@@ -218,12 +228,13 @@ const styles = StyleSheet.create({
   offlineText: {
     color: '#EAB308',
     fontSize: 13,
+    fontFamily: PoppinsFonts.regular,
   },
   sectionTitle: {
     color: AqiColors.textSecondary,
     fontSize: 12,
     letterSpacing: 1,
-    fontWeight: '600',
+    fontFamily: PoppinsFonts.semiBold,
     marginTop: 24,
     marginBottom: 16,
   },

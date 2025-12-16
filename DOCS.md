@@ -48,6 +48,7 @@ This document provides in-depth technical documentation for developers working o
 | Real-time | MQTT.js | 5.14 |
 | Icons | Lucide React Native | 0.561 |
 | Animations | React Native Reanimated | 4.1 |
+| Typography | Poppins (Google Fonts) | - |
 
 ---
 
@@ -56,7 +57,7 @@ This document provides in-depth technical documentation for developers working o
 ### AQI Components (`/components/aqi/`)
 
 #### `aqi-gauge.tsx`
-A circular gauge component that visually displays the current AQI value.
+A circular gauge component that visually displays the current AQI value with glowing effects.
 
 **Props:**
 ```typescript
@@ -103,26 +104,22 @@ interface MetricCardProps {
 
 ---
 
-#### `health-tip.tsx`
-Displays context-aware health recommendations.
+### Other Components
+
+#### `welcome-screen.tsx`
+App welcome screen with fade animations and project information.
 
 **Props:**
 ```typescript
-interface HealthTipProps {
-  category: AqiCategory;  // Current AQI category
+interface WelcomeScreenProps {
+  onFinish: () => void;  // Callback when user taps Continue
 }
 ```
 
 ---
 
-#### `forecast-chart.tsx`
-Visualizes AQI forecast data (future enhancement).
-
----
-
-### UI Components (`/components/ui/`)
-
-Generic reusable UI components following the app's design system.
+#### `haptic-tab.tsx`
+Tab bar button with haptic feedback on press.
 
 ---
 
@@ -142,13 +139,14 @@ The primary hook for managing MQTT connection and AQI data.
   error: string | null;      // Error message if any
   lastUpdated: Date | null;  // Timestamp of last data update
   isOffline: boolean;        // Offline/demo mode indicator
+  isConnected: boolean;      // Current MQTT connection status
   refresh: () => void;       // Function to reconnect
 }
 ```
 
 **Usage:**
 ```tsx
-const { data, loading, error, isOffline, refresh } = useAqiData();
+const { data, loading, error, isOffline, isConnected, refresh } = useAqiData();
 ```
 
 **Configuration Constants:**
@@ -164,7 +162,7 @@ const { data, loading, error, isOffline, refresh } = useAqiData();
 
 Helper function to get human-readable time since last update.
 
-**Returns:** `string` (e.g., "Just now", "2 mins ago", "1 hour ago")
+**Returns:** `string` (e.g., "Just now", "30s ago", "2 mins ago", "1 hours ago")
 
 ---
 
@@ -172,15 +170,7 @@ Helper function to get human-readable time since last update.
 
 Hook for detecting system color scheme (light/dark mode).
 
-**Location:** `hooks/use-color-scheme.ts`
-
----
-
-### `useThemeColor()`
-
-Hook for getting theme-appropriate colors.
-
-**Location:** `hooks/use-theme-color.ts`
+**Location:** `hooks/use-color-scheme.ts` (and `.web.ts` for web platform)
 
 ---
 
@@ -232,16 +222,48 @@ interface AqiState {
 }
 ```
 
+### Constants in `types/aqi.ts`
+
+- `AQI_COLORS` - Color mapping for each AQI category
+- `AQI_LABELS` - Human-readable labels for each category
+- `HEALTH_TIPS` - Health recommendations per category
+
 ---
 
 ## Theming System
 
 ### Color Constants (`constants/theme.ts`)
 
-The app uses a centralized theming system:
+The app uses a centralized theming system with a dark green theme:
 
 ```typescript
-// AQI Category Colors
+// App Colors
+const AqiColors = {
+  background: '#0A1F1C',      // Dark green background
+  card: '#0F2922',            // Card surfaces
+  cardBorder: '#1A3D32',      // Card borders
+  accent: '#22C55E',          // Green accent color
+  textPrimary: '#FFFFFF',     // Primary text
+  textSecondary: '#9CA3AF',   // Secondary text
+  textMuted: '#6B7280',       // Muted text
+};
+```
+
+### Font System
+
+```typescript
+const PoppinsFonts = {
+  light: 'Poppins_300Light',
+  regular: 'Poppins_400Regular',
+  medium: 'Poppins_500Medium',
+  semiBold: 'Poppins_600SemiBold',
+  bold: 'Poppins_700Bold',
+};
+```
+
+### AQI Category Colors (from `types/aqi.ts`)
+
+```typescript
 const AQI_COLORS = {
   good: '#22C55E',              // Green
   moderate: '#EAB308',          // Yellow
@@ -249,15 +271,6 @@ const AQI_COLORS = {
   unhealthy: '#EF4444',         // Red
   very_unhealthy: '#A855F7',    // Purple
   hazardous: '#7C2D12',         // Maroon
-};
-
-// App Colors
-const AqiColors = {
-  background: '#0F0F0F',        // Dark background
-  surface: '#1A1A1A',           // Card surfaces
-  textPrimary: '#FFFFFF',       // Primary text
-  textSecondary: '#9CA3AF',     // Secondary text
-  accent: '#3B82F6',            // Accent color
 };
 ```
 
@@ -272,8 +285,10 @@ The app uses WebSocket-based MQTT for browser/React Native compatibility:
 ```typescript
 const client = mqtt.connect('ws://192.168.1.100:9001', {
   clientId: `aqi_app_${randomId}`,
-  keepalive: 60,
-  reconnectPeriod: 5000,
+  keepalive: 30,
+  reconnectPeriod: 3000,
+  connectTimeout: 5000,
+  clean: true,
 });
 ```
 
@@ -295,6 +310,21 @@ const client = mqtt.connect('ws://192.168.1.100:9001', {
   "aqi": 78
 }
 ```
+
+### Field Mapping
+
+The hook supports multiple field name variations:
+
+| App Field | Accepted MQTT Fields |
+|-----------|---------------------|
+| `pm1_0` | `pm1`, `pm1_0` |
+| `pm2_5` | `pm2_5` |
+| `pm4_0` | `pm4`, `pm4_0` |
+| `pm10` | `pm10` |
+| `temperature` | `temp`, `temperature` |
+| `humidity` | `rh`, `humidity` |
+| `voc_index` | `voc`, `voc_index` |
+| `nox_index` | `nox`, `nox_index` |
 
 ### Broker Requirements
 

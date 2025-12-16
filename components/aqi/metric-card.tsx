@@ -1,4 +1,4 @@
-import { AqiColors } from '@/constants/theme';
+import { AqiColors, PoppinsFonts } from '@/constants/theme';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   label: {
     color: AqiColors.textSecondary,
     fontSize: 13,
-    fontWeight: '500',
+    fontFamily: PoppinsFonts.medium,
   },
   valueContainer: {
     flexDirection: 'row',
@@ -61,10 +61,11 @@ const styles = StyleSheet.create({
   value: {
     color: AqiColors.textPrimary,
     fontSize: 28,
-    fontWeight: '300',
+    fontFamily: PoppinsFonts.light,
   },
   unit: {
     color: AqiColors.textMuted,
     fontSize: 14,
+    fontFamily: PoppinsFonts.regular,
   },
 });

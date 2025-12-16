@@ -1,4 +1,4 @@
-# AQI App 🌬️
+# AQI App 🌿
 
 A real-time **Air Quality Index (AQI) Monitoring** mobile application built with React Native and Expo. The app connects to a **Sensirion SEN55** environmental sensor via MQTT to display live air quality data.
 
@@ -13,10 +13,11 @@ A real-time **Air Quality Index (AQI) Monitoring** mobile application built with
 
 - **Real-time AQI Monitoring** - Live Air Quality Index with color-coded categories
 - **Comprehensive Metrics** - PM1.0, PM2.5, PM4.0, PM10, VOC, NOx, Temperature, Humidity
-- **Visual AQI Gauge** - Beautiful circular gauge with animated transitions
+- **Visual AQI Gauge** - Beautiful circular gauge with glowing effects and animated transitions
 - **Health Tips** - Context-aware health recommendations based on current AQI
+- **Live Updates** - Real-time "time since update" display that refreshes every second
 - **Offline Support** - Fallback to demo data when sensor isn't available
-- **Dark Mode Ready** - Supports system-level theme preferences
+- **Dark Mode** - Elegant dark theme with green accents
 - **Cross-platform** - Works on iOS, Android, and Web
 
 ---
@@ -25,29 +26,28 @@ A real-time **Air Quality Index (AQI) Monitoring** mobile application built with
 
 ```
 aqi-app/
-├── app/                    # Expo Router pages
-│   ├── (tabs)/             # Tab-based navigation
-│   │   ├── index.tsx       # Home screen - AQI Dashboard
-│   │   ├── explore.tsx     # Explore/Details screen
-│   │   └── settings.tsx    # Settings screen
-│   ├── _layout.tsx         # Root layout
-│   └── modal.tsx           # Modal component
+├── app/                      # Expo Router pages
+│   ├── (tabs)/               # Tab-based navigation
+│   │   ├── _layout.tsx       # Tab navigation layout
+│   │   ├── index.tsx         # Home screen - AQI Dashboard
+│   │   └── settings.tsx      # Settings screen
+│   └── _layout.tsx           # Root layout with welcome screen
 ├── components/
-│   ├── aqi/                # AQI-specific components
-│   │   ├── aqi-gauge.tsx   # Circular AQI gauge component
-│   │   ├── metric-card.tsx # Individual metric display card
-│   │   ├── forecast-chart.tsx # AQI forecast visualization
-│   │   └── health-tip.tsx  # Health recommendation component
-│   └── ui/                 # Reusable UI components
+│   ├── aqi/                  # AQI-specific components
+│   │   ├── index.ts          # Barrel exports
+│   │   ├── aqi-gauge.tsx     # Circular AQI gauge component
+│   │   └── metric-card.tsx   # Individual metric display card
+│   ├── haptic-tab.tsx        # Haptic feedback tab button
+│   └── welcome-screen.tsx    # App welcome/splash screen
 ├── hooks/
-│   ├── use-aqi-data.ts     # MQTT connection & data hook
-│   ├── use-color-scheme.ts # Theme detection hook
-│   └── use-theme-color.ts  # Theme color utilities
+│   ├── use-aqi-data.ts       # MQTT connection & data hook
+│   └── use-color-scheme.ts   # Theme detection hook (+ .web.ts)
 ├── types/
-│   └── aqi.ts              # TypeScript interfaces & constants
+│   └── aqi.ts                # TypeScript interfaces & constants
 ├── constants/
-│   └── theme.ts            # Theme constants & AQI colors
-└── assets/                 # Images, fonts, and icons
+│   └── theme.ts              # Theme constants & AQI colors
+└── assets/
+    └── images/               # App icons and splash images
 ```
 
 ---
@@ -146,18 +146,37 @@ The app uses EPA-standard AQI categories:
 
 ---
 
+## 📦 Building for Production
+
+### Android APK (using EAS Build)
+
+```bash
+npm install -g eas-cli
+eas login
+eas build:configure
+eas build -p android --profile preview
+```
+
+### iOS (requires Apple Developer Account)
+
+```bash
+eas build -p ios --profile preview
+```
+
+---
+
 ## 🛠️ Tech Stack
 
 | Technology | Purpose |
 |------------|---------|
 | **React Native 0.81** | Cross-platform mobile framework |
 | **Expo 54** | Development toolkit & managed workflow |
-| **TypeScript** | Type-safe JavaScript |
-| **Expo Router** | File-based navigation |
-| **MQTT.js** | Real-time sensor communication |
+| **TypeScript 5.9** | Type-safe JavaScript |
+| **Expo Router 6** | File-based navigation |
+| **MQTT.js 5.14** | Real-time sensor communication |
 | **Lucide Icons** | Modern icon library |
-| **React Native Reanimated** | Smooth animations |
-| **React Navigation** | Tab and modal navigation |
+| **React Native Reanimated 4.1** | Smooth animations |
+| **Poppins Font** | Custom typography |
 
 ---
 
@@ -185,8 +204,9 @@ SEN55 Sensor → ESP32/MCU → MQTT Broker → WebSocket → AQI App
 |------|-------------|
 | `hooks/use-aqi-data.ts` | Main MQTT connection hook, data fetching, offline fallback |
 | `types/aqi.ts` | TypeScript interfaces for AQI data, categories, colors |
-| `components/aqi/aqi-gauge.tsx` | Visual circular gauge component |
+| `components/aqi/aqi-gauge.tsx` | Visual circular gauge component with glow effects |
 | `components/aqi/metric-card.tsx` | Individual metric display cards |
+| `components/welcome-screen.tsx` | App welcome screen with animations |
 | `app/(tabs)/index.tsx` | Home screen with dashboard layout |
 | `constants/theme.ts` | App-wide color theme definitions |
 
@@ -210,7 +230,10 @@ This project is part of an academic mega project. Please check with the authors 
 
 ## 👥 Authors
 
-- **Ashutosh Swamy** - *Initial work*
+- **Ashutosh Swamy**
+- **Shlok Parge**
+- **Aaryan Sharma**
+- **Naman Vangani**
 
 ---
 

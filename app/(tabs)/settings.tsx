@@ -1,4 +1,4 @@
-import { AqiColors } from '@/constants/theme';
+import { AqiColors, PoppinsFonts } from '@/constants/theme';
 import React from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   title: {
     color: AqiColors.textPrimary,
     fontSize: 28,
-    fontWeight: '600',
+    fontFamily: PoppinsFonts.semiBold,
     marginBottom: 32,
   },
   section: {
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     color: AqiColors.textSecondary,
     fontSize: 12,
     letterSpacing: 1,
-    fontWeight: '600',
+    fontFamily: PoppinsFonts.semiBold,
     marginBottom: 16,
   },
   inputGroup: {
@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     color: AqiColors.textSecondary,
     fontSize: 14,
     marginBottom: 8,
+    fontFamily: PoppinsFonts.regular,
   },
   input: {
     backgroundColor: AqiColors.card,
@@ -86,6 +87,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: AqiColors.cardBorder,
+    fontFamily: PoppinsFonts.regular,
   },
   saveButton: {
     backgroundColor: AqiColors.accent,
@@ -96,15 +98,17 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: '#000',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: PoppinsFonts.semiBold,
   },
   aboutText: {
     color: AqiColors.textPrimary,
     fontSize: 16,
     marginBottom: 4,
+    fontFamily: PoppinsFonts.regular,
   },
   aboutSubtext: {
     color: AqiColors.textMuted,
     fontSize: 14,
+    fontFamily: PoppinsFonts.regular,
   },
 });
