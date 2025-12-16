@@ -1,50 +1,221 @@
-# Welcome to your Expo app 👋
+# AQI App 🌬️
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A real-time **Air Quality Index (AQI) Monitoring** mobile application built with React Native and Expo. The app connects to a **Sensirion SEN55** environmental sensor via MQTT to display live air quality data.
 
-## Get started
+![React Native](https://img.shields.io/badge/React_Native-0.81.5-61DAFB?logo=react)
+![Expo](https://img.shields.io/badge/Expo-54.0-000020?logo=expo)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)
+![MQTT](https://img.shields.io/badge/MQTT-5.x-660066)
 
-1. Install dependencies
+---
 
+## 📱 Features
+
+- **Real-time AQI Monitoring** - Live Air Quality Index with color-coded categories
+- **Comprehensive Metrics** - PM1.0, PM2.5, PM4.0, PM10, VOC, NOx, Temperature, Humidity
+- **Visual AQI Gauge** - Beautiful circular gauge with animated transitions
+- **Health Tips** - Context-aware health recommendations based on current AQI
+- **Offline Support** - Fallback to demo data when sensor isn't available
+- **Dark Mode Ready** - Supports system-level theme preferences
+- **Cross-platform** - Works on iOS, Android, and Web
+
+---
+
+## 🏗️ Project Structure
+
+```
+aqi-app/
+├── app/                    # Expo Router pages
+│   ├── (tabs)/             # Tab-based navigation
+│   │   ├── index.tsx       # Home screen - AQI Dashboard
+│   │   ├── explore.tsx     # Explore/Details screen
+│   │   └── settings.tsx    # Settings screen
+│   ├── _layout.tsx         # Root layout
+│   └── modal.tsx           # Modal component
+├── components/
+│   ├── aqi/                # AQI-specific components
+│   │   ├── aqi-gauge.tsx   # Circular AQI gauge component
+│   │   ├── metric-card.tsx # Individual metric display card
+│   │   ├── forecast-chart.tsx # AQI forecast visualization
+│   │   └── health-tip.tsx  # Health recommendation component
+│   └── ui/                 # Reusable UI components
+├── hooks/
+│   ├── use-aqi-data.ts     # MQTT connection & data hook
+│   ├── use-color-scheme.ts # Theme detection hook
+│   └── use-theme-color.ts  # Theme color utilities
+├── types/
+│   └── aqi.ts              # TypeScript interfaces & constants
+├── constants/
+│   └── theme.ts            # Theme constants & AQI colors
+└── assets/                 # Images, fonts, and icons
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** 18+ installed
+- **npm** or **yarn** package manager
+- **Expo CLI** (optional, but recommended)
+- **Expo Go** app on your mobile device for testing
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd aqi-app
+   ```
+
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. **Start the development server**
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+4. **Run on device**
+   - Scan the QR code with **Expo Go** (Android) or Camera app (iOS)
+   - Or press `a` for Android emulator, `i` for iOS simulator, `w` for web
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## ⚙️ Configuration
 
-## Get a fresh project
+### MQTT Broker Setup
 
-When you're ready, run:
+The app connects to an MQTT broker to receive sensor data. Update the broker URL in `hooks/use-aqi-data.ts`:
 
-```bash
-npm run reset-project
+```typescript
+const MQTT_BROKER_URL = 'ws://192.168.1.100:9001';  // Your broker IP
+const MQTT_TOPIC = 'sensor/aqi';
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+> **Note:** The app uses WebSocket protocol (`ws://` or `wss://`) for MQTT connections, as standard MQTT ports don't work in React Native/browser environments.
 
-## Learn more
+### Expected Sensor Data Format
 
-To learn more about developing your project with Expo, look at the following resources:
+The app expects JSON messages on the `sensor/aqi` topic with this structure:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```json
+{
+  "pm1": 12.5,
+  "pm2_5": 25.4,
+  "pm4": 30.1,
+  "pm10": 45.2,
+  "temp": 24.5,
+  "rh": 52.0,
+  "voc": 120,
+  "nox": 15,
+  "aqi": 78
+}
+```
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## 📊 AQI Categories
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+The app uses EPA-standard AQI categories:
+
+| AQI Range | Category | Color | Health Implication |
+|-----------|----------|-------|-------------------|
+| 0-50 | Good | 🟢 Green | Air quality is satisfactory |
+| 51-100 | Moderate | 🟡 Yellow | Acceptable for most |
+| 101-150 | Unhealthy for Sensitive Groups | 🟠 Orange | Sensitive groups at risk |
+| 151-200 | Unhealthy | 🔴 Red | Everyone may experience effects |
+| 201-300 | Very Unhealthy | 🟣 Purple | Health alert |
+| 301+ | Hazardous | 🟤 Maroon | Health emergency |
+
+---
+
+## 🔧 Available Scripts
+
+| Script | Command | Description |
+|--------|---------|-------------|
+| **Start** | `npm start` | Start Expo development server |
+| **Android** | `npm run android` | Run on Android device/emulator |
+| **iOS** | `npm run ios` | Run on iOS simulator |
+| **Web** | `npm run web` | Run in web browser |
+| **Lint** | `npm run lint` | Run ESLint code checks |
+| **Reset** | `npm run reset-project` | Reset to fresh project state |
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| **React Native 0.81** | Cross-platform mobile framework |
+| **Expo 54** | Development toolkit & managed workflow |
+| **TypeScript** | Type-safe JavaScript |
+| **Expo Router** | File-based navigation |
+| **MQTT.js** | Real-time sensor communication |
+| **Lucide Icons** | Modern icon library |
+| **React Native Reanimated** | Smooth animations |
+| **React Navigation** | Tab and modal navigation |
+
+---
+
+## 🔌 Hardware Integration
+
+This app is designed to work with the **Sensirion SEN55** environmental sensor:
+
+### Measured Parameters
+- **PM1.0, PM2.5, PM4.0, PM10** - Particulate matter concentrations
+- **VOC Index** - Volatile organic compounds (1-500 scale)
+- **NOx Index** - Nitrogen oxides (1-500 scale)
+- **Temperature** - Ambient temperature (°C)
+- **Humidity** - Relative humidity (%)
+
+### Communication Flow
+```
+SEN55 Sensor → ESP32/MCU → MQTT Broker → WebSocket → AQI App
+```
+
+---
+
+## 📁 Key Files Reference
+
+| File | Description |
+|------|-------------|
+| `hooks/use-aqi-data.ts` | Main MQTT connection hook, data fetching, offline fallback |
+| `types/aqi.ts` | TypeScript interfaces for AQI data, categories, colors |
+| `components/aqi/aqi-gauge.tsx` | Visual circular gauge component |
+| `components/aqi/metric-card.tsx` | Individual metric display cards |
+| `app/(tabs)/index.tsx` | Home screen with dashboard layout |
+| `constants/theme.ts` | App-wide color theme definitions |
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is part of an academic mega project. Please check with the authors for licensing information.
+
+---
+
+## 👥 Authors
+
+- **Ashutosh Swamy** - *Initial work*
+
+---
+
+## 🙏 Acknowledgments
+
+- [Expo](https://expo.dev/) - For the amazing development experience
+- [Sensirion](https://sensirion.com/) - For the SEN55 sensor documentation
+- [MQTT.js](https://github.com/mqttjs/MQTT.js) - For reliable MQTT connectivity
