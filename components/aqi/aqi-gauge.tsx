@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     color: AqiColors.textSecondary,
     fontSize: 12,
     letterSpacing: 2,
-    fontWeight: '600',
+    fontFamily: 'Poppins_600SemiBold',
     marginBottom: 10,
   },
   gaugeContainer: {
@@ -106,12 +106,12 @@ const styles = StyleSheet.create({
   },
   aqiValue: {
     fontSize: 72,
-    fontWeight: '300',
+    fontFamily: 'Poppins_300Light',
     color: AqiColors.textPrimary,
   },
   categoryLabel: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: 'Poppins_600SemiBold',
     marginTop: 10,
   },
   updatedLabel: {
@@ -122,5 +122,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
+    fontFamily: 'Poppins_400Regular',
   },
 });
+

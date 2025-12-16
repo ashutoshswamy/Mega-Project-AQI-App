@@ -1,15 +1,10 @@
-import { AqiGauge, ForecastChart, HealthTip, MetricCard } from '@/components/aqi';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { AqiGauge, MetricCard } from '@/components/aqi';
 import { AqiColors } from '@/constants/theme';
 import { getTimeSinceUpdate, useAqiData } from '@/hooks/use-aqi-data';
+import { Cloud, Droplets, Flame, Thermometer, Wind } from 'lucide-react-native';
 import React from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Metric icons as simple components
-const MetricIcon = ({ name, color = AqiColors.accent }: { name: string; color?: string }) => (
-  <IconSymbol name={name as any} size={16} color={color} />
-);
 
 export default function HomeScreen() {
   const { data, loading, error, isOffline, lastUpdated, refresh } = useAqiData();
@@ -62,21 +57,7 @@ export default function HomeScreen() {
           />
         }
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.menuButton}>
-            <IconSymbol name="line.3.horizontal" size={24} color={AqiColors.textPrimary} />
-          </TouchableOpacity>
-          
-          <View style={styles.locationContainer}>
-            <Text style={styles.locationLabel}>CURRENT LOCATION ▾</Text>
-            <Text style={styles.locationName}>San Francisco, CA</Text>
-          </View>
-          
-          <TouchableOpacity style={styles.bellButton}>
-            <IconSymbol name="bell.fill" size={22} color={AqiColors.accent} />
-          </TouchableOpacity>
-        </View>
+
 
         {/* AQI Gauge */}
         {data && (
@@ -102,14 +83,14 @@ export default function HomeScreen() {
             {/* Row 1 */}
             <View style={styles.metricsRow}>
               <MetricCard
-                icon={<MetricIcon name="aqi.medium" />}
+                icon={<Wind size={16} color={AqiColors.accent} />}
                 label="PM1.0"
                 value={data.pm1_0.toFixed(1)}
                 unit="µg/m³"
               />
               <View style={styles.metricGap} />
               <MetricCard
-                icon={<MetricIcon name="aqi.medium" />}
+                icon={<Wind size={16} color={AqiColors.accent} />}
                 label="PM2.5"
                 value={data.pm2_5.toFixed(1)}
                 unit="µg/m³"
@@ -119,14 +100,14 @@ export default function HomeScreen() {
             {/* Row 2 */}
             <View style={styles.metricsRow}>
               <MetricCard
-                icon={<MetricIcon name="aqi.medium" />}
+                icon={<Wind size={16} color={AqiColors.accent} />}
                 label="PM4.0"
                 value={data.pm4_0.toFixed(1)}
                 unit="µg/m³"
               />
               <View style={styles.metricGap} />
               <MetricCard
-                icon={<MetricIcon name="aqi.medium" />}
+                icon={<Wind size={16} color={AqiColors.accent} />}
                 label="PM10"
                 value={data.pm10.toFixed(1)}
                 unit="µg/m³"
@@ -136,14 +117,14 @@ export default function HomeScreen() {
             {/* Row 3 */}
             <View style={styles.metricsRow}>
               <MetricCard
-                icon={<MetricIcon name="flame.fill" color="#F97316" />}
+                icon={<Flame size={16} color="#F97316" />}
                 label="VOC"
                 value={Math.round(data.voc_index)}
                 unit="Index"
               />
               <View style={styles.metricGap} />
               <MetricCard
-                icon={<MetricIcon name="cloud.fill" color="#EAB308" />}
+                icon={<Cloud size={16} color="#EAB308" />}
                 label="NOX"
                 value={Math.round(data.nox_index)}
                 unit="Index"
@@ -153,14 +134,14 @@ export default function HomeScreen() {
             {/* Row 4 */}
             <View style={styles.metricsRow}>
               <MetricCard
-                icon={<MetricIcon name="drop.fill" color="#3B82F6" />}
+                icon={<Droplets size={16} color="#3B82F6" />}
                 label="HUMIDITY"
                 value={Math.round(data.humidity)}
                 unit="%"
               />
               <View style={styles.metricGap} />
               <MetricCard
-                icon={<MetricIcon name="thermometer.medium" color="#EF4444" />}
+                icon={<Thermometer size={16} color="#EF4444" />}
                 label="TEMP"
                 value={data.temperature.toFixed(1)}
                 unit="°C"
@@ -168,12 +149,6 @@ export default function HomeScreen() {
             </View>
           </View>
         )}
-
-        {/* 24H Forecast */}
-        <ForecastChart />
-
-        {/* Health Tip */}
-        {data && <HealthTip category={data.aqi_category} />}
 
         {/* Bottom padding for tab bar */}
         <View style={{ height: 100 }} />
@@ -231,32 +206,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 16,
-  },
-  menuButton: {
-    padding: 8,
-  },
-  locationContainer: {
-    alignItems: 'center',
-  },
-  locationLabel: {
-    color: AqiColors.textMuted,
-    fontSize: 10,
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  locationName: {
-    color: AqiColors.textPrimary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  bellButton: {
-    padding: 8,
-  },
+
   offlineBanner: {
     backgroundColor: 'rgba(234, 179, 8, 0.2)',
     paddingVertical: 8,
