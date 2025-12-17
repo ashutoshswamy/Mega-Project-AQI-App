@@ -14,9 +14,9 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#0A1F1C",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/airsense-logo.png",
+        "backgroundImage": "./assets/images/airsense-logo.png",
+        "monochromeImage": "./assets/images/airsense-logo.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -34,7 +34,7 @@
           "image": "./assets/images/airsense-logo.png",
           "imageWidth": 128,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#0A1F1C",
           "dark": {
             "backgroundColor": "#0A1F1C"
           }
