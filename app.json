@@ -14,9 +14,9 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#0A1F1C",
-        "foregroundImage": "./assets/images/airsense-logo.png",
-        "backgroundImage": "./assets/images/airsense-logo.png",
-        "monochromeImage": "./assets/images/airsense-logo.png"
+        "foregroundImage": "./assets/images/airsense-icon.png",
+        "backgroundImage": "./assets/images/airsense-icon.png",
+        "monochromeImage": "./assets/images/airsense-icon.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
