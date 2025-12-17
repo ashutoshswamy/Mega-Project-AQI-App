@@ -39,16 +39,16 @@ This document provides in-depth technical documentation for developers working o
 
 ### Technology Stack Details
 
-| Layer | Technology | Version |
-|-------|------------|---------|
-| Runtime | React Native | 0.81.5 |
-| Build System | Expo | 54.0 |
-| Language | TypeScript | 5.9 |
-| Navigation | Expo Router | 6.0 |
-| Real-time | MQTT.js | 5.14 |
-| Icons | Lucide React Native | 0.561 |
-| Animations | React Native Reanimated | 4.1 |
-| Typography | Poppins (Google Fonts) | - |
+| Layer        | Technology              | Version |
+| ------------ | ----------------------- | ------- |
+| Runtime      | React Native            | 0.81.5  |
+| Build System | Expo                    | 54.0    |
+| Language     | TypeScript              | 5.9     |
+| Navigation   | Expo Router             | 6.0     |
+| Real-time    | MQTT.js                 | 5.14    |
+| Icons        | Lucide React Native     | 0.561   |
+| Animations   | React Native Reanimated | 4.1     |
+| Typography   | Poppins (Google Fonts)  | -       |
 
 ---
 
@@ -57,42 +57,44 @@ This document provides in-depth technical documentation for developers working o
 ### AQI Components (`/components/aqi/`)
 
 #### `aqi-gauge.tsx`
+
 A circular gauge component that visually displays the current AQI value with glowing effects.
 
 **Props:**
+
 ```typescript
 interface AqiGaugeProps {
-  aqi: number;           // Current AQI value (0-500)
+  aqi: number; // Current AQI value (0-500)
   category: AqiCategory; // AQI category for color coding
-  lastUpdated: string;   // Human-readable timestamp
+  lastUpdated: string; // Human-readable timestamp
 }
 ```
 
 **Usage:**
+
 ```tsx
-<AqiGauge 
-  aqi={78} 
-  category="moderate" 
-  lastUpdated="2 mins ago" 
-/>
+<AqiGauge aqi={78} category="moderate" lastUpdated="2 mins ago" />
 ```
 
 ---
 
 #### `metric-card.tsx`
+
 Individual card component for displaying a single metric.
 
 **Props:**
+
 ```typescript
 interface MetricCardProps {
-  icon: ReactNode;  // Icon component (from lucide-react-native)
-  label: string;    // Metric label (e.g., "PM2.5")
-  value: string | number;  // Metric value
-  unit: string;     // Unit of measurement (e.g., "µg/m³")
+  icon: ReactNode; // Icon component (from lucide-react-native)
+  label: string; // Metric label (e.g., "PM2.5")
+  value: string | number; // Metric value
+  unit: string; // Unit of measurement (e.g., "µg/m³")
 }
 ```
 
 **Usage:**
+
 ```tsx
 <MetricCard
   icon={<Wind size={16} color="#3B82F6" />}
@@ -107,18 +109,21 @@ interface MetricCardProps {
 ### Other Components
 
 #### `welcome-screen.tsx`
+
 App welcome screen with fade animations and project information.
 
 **Props:**
+
 ```typescript
 interface WelcomeScreenProps {
-  onFinish: () => void;  // Callback when user taps Continue
+  onFinish: () => void; // Callback when user taps Continue
 }
 ```
 
 ---
 
 #### `haptic-tab.tsx`
+
 Tab bar button with haptic feedback on press.
 
 ---
@@ -132,6 +137,7 @@ The primary hook for managing MQTT connection and AQI data.
 **Location:** `hooks/use-aqi-data.ts`
 
 **Returns:**
+
 ```typescript
 {
   data: AqiData | null;      // Current sensor data
@@ -145,6 +151,7 @@ The primary hook for managing MQTT connection and AQI data.
 ```
 
 **Usage:**
+
 ```tsx
 const { data, loading, error, isOffline, isConnected, refresh } = useAqiData();
 ```
@@ -177,39 +184,42 @@ Hook for detecting system color scheme (light/dark mode).
 ## Type Definitions
 
 ### `AqiData`
+
 Main interface for sensor data.
 
 ```typescript
 interface AqiData {
-  device_id: string;      // Sensor device identifier
-  timestamp: string;      // ISO 8601 timestamp
-  pm1_0: number;          // PM1.0 concentration (µg/m³)
-  pm2_5: number;          // PM2.5 concentration (µg/m³)
-  pm4_0: number;          // PM4.0 concentration (µg/m³)
-  pm10: number;           // PM10 concentration (µg/m³)
-  voc_index: number;      // VOC Index (1-500)
-  nox_index: number;      // NOx Index (1-500)
-  temperature: number;    // Temperature (°C)
-  humidity: number;       // Relative Humidity (%)
-  aqi: number;            // Calculated AQI (0-500)
+  device_id: string; // Sensor device identifier
+  timestamp: string; // ISO 8601 timestamp
+  pm1_0: number; // PM1.0 concentration (µg/m³)
+  pm2_5: number; // PM2.5 concentration (µg/m³)
+  pm4_0: number; // PM4.0 concentration (µg/m³)
+  pm10: number; // PM10 concentration (µg/m³)
+  voc_index: number; // VOC Index (1-500)
+  nox_index: number; // NOx Index (1-500)
+  temperature: number; // Temperature (°C)
+  humidity: number; // Relative Humidity (%)
+  aqi: number; // Calculated AQI (0-500)
   aqi_category: AqiCategory;
 }
 ```
 
 ### `AqiCategory`
+
 Union type for AQI categories.
 
 ```typescript
-type AqiCategory = 
-  | 'good' 
-  | 'moderate' 
-  | 'unhealthy_sensitive' 
-  | 'unhealthy' 
-  | 'very_unhealthy' 
-  | 'hazardous';
+type AqiCategory =
+  | "good"
+  | "moderate"
+  | "unhealthy_sensitive"
+  | "unhealthy"
+  | "very_unhealthy"
+  | "hazardous";
 ```
 
 ### `AqiState`
+
 State interface for the useAqiData hook.
 
 ```typescript
@@ -226,7 +236,6 @@ interface AqiState {
 
 - `AQI_COLORS` - Color mapping for each AQI category
 - `AQI_LABELS` - Human-readable labels for each category
-- `HEALTH_TIPS` - Health recommendations per category
 
 ---
 
@@ -239,13 +248,13 @@ The app uses a centralized theming system with a dark green theme:
 ```typescript
 // App Colors
 const AqiColors = {
-  background: '#0A1F1C',      // Dark green background
-  card: '#0F2922',            // Card surfaces
-  cardBorder: '#1A3D32',      // Card borders
-  accent: '#22C55E',          // Green accent color
-  textPrimary: '#FFFFFF',     // Primary text
-  textSecondary: '#9CA3AF',   // Secondary text
-  textMuted: '#6B7280',       // Muted text
+  background: "#0A1F1C", // Dark green background
+  card: "#0F2922", // Card surfaces
+  cardBorder: "#1A3D32", // Card borders
+  accent: "#22C55E", // Green accent color
+  textPrimary: "#FFFFFF", // Primary text
+  textSecondary: "#9CA3AF", // Secondary text
+  textMuted: "#6B7280", // Muted text
 };
 ```
 
@@ -253,11 +262,11 @@ const AqiColors = {
 
 ```typescript
 const PoppinsFonts = {
-  light: 'Poppins_300Light',
-  regular: 'Poppins_400Regular',
-  medium: 'Poppins_500Medium',
-  semiBold: 'Poppins_600SemiBold',
-  bold: 'Poppins_700Bold',
+  light: "Poppins_300Light",
+  regular: "Poppins_400Regular",
+  medium: "Poppins_500Medium",
+  semiBold: "Poppins_600SemiBold",
+  bold: "Poppins_700Bold",
 };
 ```
 
@@ -265,12 +274,12 @@ const PoppinsFonts = {
 
 ```typescript
 const AQI_COLORS = {
-  good: '#22C55E',              // Green
-  moderate: '#EAB308',          // Yellow
-  unhealthy_sensitive: '#F97316', // Orange
-  unhealthy: '#EF4444',         // Red
-  very_unhealthy: '#A855F7',    // Purple
-  hazardous: '#7C2D12',         // Maroon
+  good: "#22C55E", // Green
+  moderate: "#EAB308", // Yellow
+  unhealthy_sensitive: "#F97316", // Orange
+  unhealthy: "#EF4444", // Red
+  very_unhealthy: "#A855F7", // Purple
+  hazardous: "#7C2D12", // Maroon
 };
 ```
 
@@ -283,7 +292,7 @@ const AQI_COLORS = {
 The app uses WebSocket-based MQTT for browser/React Native compatibility:
 
 ```typescript
-const client = mqtt.connect('ws://192.168.1.100:9001', {
+const client = mqtt.connect("ws://192.168.1.100:9001", {
   clientId: `aqi_app_${randomId}`,
   keepalive: 30,
   reconnectPeriod: 3000,
@@ -297,6 +306,7 @@ const client = mqtt.connect('ws://192.168.1.100:9001', {
 **Topic:** `sensor/aqi`
 
 **Incoming JSON:**
+
 ```json
 {
   "pm1": 12.5,
@@ -315,28 +325,29 @@ const client = mqtt.connect('ws://192.168.1.100:9001', {
 
 The hook supports multiple field name variations:
 
-| App Field | Accepted MQTT Fields |
-|-----------|---------------------|
-| `pm1_0` | `pm1`, `pm1_0` |
-| `pm2_5` | `pm2_5` |
-| `pm4_0` | `pm4`, `pm4_0` |
-| `pm10` | `pm10` |
+| App Field     | Accepted MQTT Fields  |
+| ------------- | --------------------- |
+| `pm1_0`       | `pm1`, `pm1_0`        |
+| `pm2_5`       | `pm2_5`               |
+| `pm4_0`       | `pm4`, `pm4_0`        |
+| `pm10`        | `pm10`                |
 | `temperature` | `temp`, `temperature` |
-| `humidity` | `rh`, `humidity` |
-| `voc_index` | `voc`, `voc_index` |
-| `nox_index` | `nox`, `nox_index` |
+| `humidity`    | `rh`, `humidity`      |
+| `voc_index`   | `voc`, `voc_index`    |
+| `nox_index`   | `nox`, `nox_index`    |
 
 ### Broker Requirements
 
-| Setting | Requirement |
-|---------|-------------|
-| Protocol | WebSocket (ws:// or wss://) |
-| Default Port | 9001 (Mosquitto WebSocket) |
+| Setting        | Requirement                                  |
+| -------------- | -------------------------------------------- |
+| Protocol       | WebSocket (ws:// or wss://)                  |
+| Default Port   | 9001 (Mosquitto WebSocket)                   |
 | Authentication | Optional (configure in mqtt.connect options) |
 
 ### Mosquitto Configuration Example
 
 Add to `mosquitto.conf`:
+
 ```
 listener 9001
 protocol websockets
@@ -350,14 +361,16 @@ allow_anonymous true
 ### Common Issues
 
 #### App shows "Demo Data"
+
 - **Cause:** Cannot connect to MQTT broker
-- **Solution:** 
+- **Solution:**
   1. Check `MQTT_BROKER_URL` in `use-aqi-data.ts`
   2. Ensure broker is running and accessible
   3. Verify WebSocket port is open (default: 9001)
   4. Check firewall settings
 
 #### "Connection Error" message
+
 - **Cause:** Network or broker issues
 - **Solution:**
   1. Verify device is on same network as broker
@@ -365,6 +378,7 @@ allow_anonymous true
   3. Check broker logs for connection attempts
 
 #### Metrics not updating
+
 - **Cause:** Sensor not publishing or wrong topic
 - **Solution:**
   1. Verify sensor is publishing to `sensor/aqi`
@@ -372,6 +386,7 @@ allow_anonymous true
   3. Monitor broker for incoming messages
 
 #### Build/compile errors
+
 - **Solution:**
   ```bash
   rm -rf node_modules
@@ -392,13 +407,15 @@ allow_anonymous true
 ### Changing MQTT Broker
 
 Update in `hooks/use-aqi-data.ts`:
+
 ```typescript
-const MQTT_BROKER_URL = 'ws://your-broker-ip:port';
+const MQTT_BROKER_URL = "ws://your-broker-ip:port";
 ```
 
 ### Testing Without Sensor
 
 The app automatically falls back to demo data. To force demo mode:
+
 1. Set `MQTT_BROKER_URL` to an invalid address
 2. Wait for 5-second timeout
 

@@ -14,7 +14,6 @@ A real-time **Air Quality Index (AQI) Monitoring** mobile application built with
 - **Real-time AQI Monitoring** - Live Air Quality Index with color-coded categories
 - **Comprehensive Metrics** - PM1.0, PM2.5, PM4.0, PM10, VOC, NOx, Temperature, Humidity
 - **Visual AQI Gauge** - Beautiful circular gauge with glowing effects and animated transitions
-- **Health Tips** - Context-aware health recommendations based on current AQI
 - **Live Updates** - Real-time "time since update" display that refreshes every second
 - **Offline Support** - Fallback to demo data when sensor isn't available
 - **Dark Mode** - Elegant dark theme with green accents
@@ -64,17 +63,20 @@ aqi-app/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd aqi-app
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start the development server**
+
    ```bash
    npx expo start
    ```
@@ -92,8 +94,8 @@ aqi-app/
 The app connects to an MQTT broker to receive sensor data. Update the broker URL in `hooks/use-aqi-data.ts`:
 
 ```typescript
-const MQTT_BROKER_URL = 'ws://192.168.1.100:9001';  // Your broker IP
-const MQTT_TOPIC = 'sensor/aqi';
+const MQTT_BROKER_URL = "ws://192.168.1.100:9001"; // Your broker IP
+const MQTT_TOPIC = "sensor/aqi";
 ```
 
 > **Note:** The app uses WebSocket protocol (`ws://` or `wss://`) for MQTT connections, as standard MQTT ports don't work in React Native/browser environments.
@@ -122,27 +124,27 @@ The app expects JSON messages on the `sensor/aqi` topic with this structure:
 
 The app uses EPA-standard AQI categories:
 
-| AQI Range | Category | Color | Health Implication |
-|-----------|----------|-------|-------------------|
-| 0-50 | Good | 🟢 Green | Air quality is satisfactory |
-| 51-100 | Moderate | 🟡 Yellow | Acceptable for most |
-| 101-150 | Unhealthy for Sensitive Groups | 🟠 Orange | Sensitive groups at risk |
-| 151-200 | Unhealthy | 🔴 Red | Everyone may experience effects |
-| 201-300 | Very Unhealthy | 🟣 Purple | Health alert |
-| 301+ | Hazardous | 🟤 Maroon | Health emergency |
+| AQI Range | Category                       | Color     | Health Implication              |
+| --------- | ------------------------------ | --------- | ------------------------------- |
+| 0-50      | Good                           | 🟢 Green  | Air quality is satisfactory     |
+| 51-100    | Moderate                       | 🟡 Yellow | Acceptable for most             |
+| 101-150   | Unhealthy for Sensitive Groups | 🟠 Orange | Sensitive groups at risk        |
+| 151-200   | Unhealthy                      | 🔴 Red    | Everyone may experience effects |
+| 201-300   | Very Unhealthy                 | 🟣 Purple | Health alert                    |
+| 301+      | Hazardous                      | 🟤 Maroon | Health emergency                |
 
 ---
 
 ## 🔧 Available Scripts
 
-| Script | Command | Description |
-|--------|---------|-------------|
-| **Start** | `npm start` | Start Expo development server |
-| **Android** | `npm run android` | Run on Android device/emulator |
-| **iOS** | `npm run ios` | Run on iOS simulator |
-| **Web** | `npm run web` | Run in web browser |
-| **Lint** | `npm run lint` | Run ESLint code checks |
-| **Reset** | `npm run reset-project` | Reset to fresh project state |
+| Script      | Command                 | Description                    |
+| ----------- | ----------------------- | ------------------------------ |
+| **Start**   | `npm start`             | Start Expo development server  |
+| **Android** | `npm run android`       | Run on Android device/emulator |
+| **iOS**     | `npm run ios`           | Run on iOS simulator           |
+| **Web**     | `npm run web`           | Run in web browser             |
+| **Lint**    | `npm run lint`          | Run ESLint code checks         |
+| **Reset**   | `npm run reset-project` | Reset to fresh project state   |
 
 ---
 
@@ -167,16 +169,16 @@ eas build -p ios --profile preview
 
 ## 🛠️ Tech Stack
 
-| Technology | Purpose |
-|------------|---------|
-| **React Native 0.81** | Cross-platform mobile framework |
-| **Expo 54** | Development toolkit & managed workflow |
-| **TypeScript 5.9** | Type-safe JavaScript |
-| **Expo Router 6** | File-based navigation |
-| **MQTT.js 5.14** | Real-time sensor communication |
-| **Lucide Icons** | Modern icon library |
-| **React Native Reanimated 4.1** | Smooth animations |
-| **Poppins Font** | Custom typography |
+| Technology                      | Purpose                                |
+| ------------------------------- | -------------------------------------- |
+| **React Native 0.81**           | Cross-platform mobile framework        |
+| **Expo 54**                     | Development toolkit & managed workflow |
+| **TypeScript 5.9**              | Type-safe JavaScript                   |
+| **Expo Router 6**               | File-based navigation                  |
+| **MQTT.js 5.14**                | Real-time sensor communication         |
+| **Lucide Icons**                | Modern icon library                    |
+| **React Native Reanimated 4.1** | Smooth animations                      |
+| **Poppins Font**                | Custom typography                      |
 
 ---
 
@@ -185,6 +187,7 @@ eas build -p ios --profile preview
 This app is designed to work with the **Sensirion SEN55** environmental sensor:
 
 ### Measured Parameters
+
 - **PM1.0, PM2.5, PM4.0, PM10** - Particulate matter concentrations
 - **VOC Index** - Volatile organic compounds (1-500 scale)
 - **NOx Index** - Nitrogen oxides (1-500 scale)
@@ -192,6 +195,7 @@ This app is designed to work with the **Sensirion SEN55** environmental sensor:
 - **Humidity** - Relative humidity (%)
 
 ### Communication Flow
+
 ```
 SEN55 Sensor → ESP32/MCU → MQTT Broker → WebSocket → AQI App
 ```
@@ -200,15 +204,15 @@ SEN55 Sensor → ESP32/MCU → MQTT Broker → WebSocket → AQI App
 
 ## 📁 Key Files Reference
 
-| File | Description |
-|------|-------------|
-| `hooks/use-aqi-data.ts` | Main MQTT connection hook, data fetching, offline fallback |
-| `types/aqi.ts` | TypeScript interfaces for AQI data, categories, colors |
-| `components/aqi/aqi-gauge.tsx` | Visual circular gauge component with glow effects |
-| `components/aqi/metric-card.tsx` | Individual metric display cards |
-| `components/welcome-screen.tsx` | App welcome screen with animations |
-| `app/(tabs)/index.tsx` | Home screen with dashboard layout |
-| `constants/theme.ts` | App-wide color theme definitions |
+| File                             | Description                                                |
+| -------------------------------- | ---------------------------------------------------------- |
+| `hooks/use-aqi-data.ts`          | Main MQTT connection hook, data fetching, offline fallback |
+| `types/aqi.ts`                   | TypeScript interfaces for AQI data, categories, colors     |
+| `components/aqi/aqi-gauge.tsx`   | Visual circular gauge component with glow effects          |
+| `components/aqi/metric-card.tsx` | Individual metric display cards                            |
+| `components/welcome-screen.tsx`  | App welcome screen with animations                         |
+| `app/(tabs)/index.tsx`           | Home screen with dashboard layout                          |
+| `constants/theme.ts`             | App-wide color theme definitions                           |
 
 ---
 
