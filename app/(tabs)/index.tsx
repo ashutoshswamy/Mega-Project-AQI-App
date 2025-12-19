@@ -1,13 +1,20 @@
 import { AqiGauge, MetricCard } from '@/components/aqi';
 import { AqiColors, PoppinsFonts } from '@/constants/theme';
 import { getTimeSinceUpdate, useAqiData } from '@/hooks/use-aqi-data';
+import { DEFAULT_MQTT_BROKER_URL, DEFAULT_MQTT_TOPIC, useMqttSettings } from '@/hooks/use-mqtt-settings';
 import { Cloud, Droplets, Flame, Thermometer, Wind } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
-  const { data, loading, error, isOffline, lastUpdated, isConnected, refresh } = useAqiData();
+  const { settings, isLoading: isLoadingSettings } = useMqttSettings();
+  
+  // Use settings or defaults while loading
+  const brokerUrl = isLoadingSettings ? DEFAULT_MQTT_BROKER_URL : settings.brokerUrl;
+  const topic = isLoadingSettings ? DEFAULT_MQTT_TOPIC : settings.topic;
+  
+  const { data, loading, error, isOffline, lastUpdated, isConnected, refresh } = useAqiData({ brokerUrl, topic });
   const [timeSince, setTimeSince] = useState('Never');
 
   // Update time since every second for live display
@@ -19,13 +26,15 @@ export default function HomeScreen() {
     return () => clearInterval(interval);
   }, [lastUpdated]);
 
-  // Loading state
-  if (loading && !data) {
+  // Loading state - also show when loading settings
+  if ((loading || isLoadingSettings) && !data) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color={AqiColors.accent} />
-          <Text style={styles.loadingText}>Connecting to sensor...</Text>
+          <Text style={styles.loadingText}>
+            {isLoadingSettings ? 'Loading settings...' : 'Connecting to sensor...'}
+          </Text>
         </View>
       </SafeAreaView>
     );

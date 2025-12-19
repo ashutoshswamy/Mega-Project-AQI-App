@@ -2,11 +2,6 @@ import { AqiCategory, AqiData, AqiState } from '@/types/aqi';
 import mqtt from 'mqtt';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-// Configure MQTT Broker - Update this with your Broker's IP
-// Note: Browser/Expo apps using 'mqtt' keys usually require WebSockets (ws:// or wss://)
-// Standard MQTT port is 1883, WebSockets usually 9001 or 8083 depending on broker config.
-const MQTT_BROKER_URL = 'wss://broker.hivemq.com:8884/mqtt'; 
-const MQTT_TOPIC = 'sensor/aqi';
 const CONNECTION_TIMEOUT_MS = 5000;
 
 // Dummy data for offline/demo mode
@@ -35,7 +30,12 @@ function getAqiCategory(aqi: number): AqiCategory {
   return 'hazardous';
 }
 
-export function useAqiData() {
+export interface UseAqiDataParams {
+  brokerUrl: string;
+  topic: string;
+}
+
+export function useAqiData({ brokerUrl, topic }: UseAqiDataParams) {
   const [state, setState] = useState<AqiState>({
     data: null,
     loading: true,
@@ -50,15 +50,15 @@ export function useAqiData() {
   const connectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const subscribeToTopic = useCallback((client: mqtt.MqttClient) => {
-    client.subscribe(MQTT_TOPIC, { qos: 1 }, (err) => {
+    client.subscribe(topic, { qos: 1 }, (err) => {
       if (err) {
         console.error('Subscription error:', err);
         setState(prev => ({ ...prev, error: 'Failed to subscribe to sensor data' }));
       } else {
-        console.log(`Subscribed to ${MQTT_TOPIC}`);
+        console.log(`Subscribed to ${topic}`);
       }
     });
-  }, []);
+  }, [topic]);
 
   const connectToMqtt = useCallback(() => {
     try {
@@ -86,7 +86,7 @@ export function useAqiData() {
         setIsConnected(false);
       }, CONNECTION_TIMEOUT_MS) as any;
 
-      const client = mqtt.connect(MQTT_BROKER_URL, {
+      const client = mqtt.connect(brokerUrl, {
         clientId: 'aqi-app-ashutosh',
         keepalive: 30,
         reconnectPeriod: 3000,
@@ -120,8 +120,8 @@ export function useAqiData() {
         setIsConnected(false);
       });
 
-      client.on('message', (topic, message) => {
-        if (topic === MQTT_TOPIC) {
+      client.on('message', (receivedTopic, message) => {
+        if (receivedTopic === topic) {
           try {
             const raw = JSON.parse(message.toString());
             
@@ -194,7 +194,7 @@ export function useAqiData() {
         isOffline: true,
       }));
     }
-  }, [subscribeToTopic]);
+  }, [brokerUrl, subscribeToTopic]);
 
   const refresh = useCallback(() => {
     console.log('Manual refresh triggered');
