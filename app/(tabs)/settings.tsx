@@ -4,7 +4,7 @@ import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'reac
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SettingsScreen() {
-  const [espIp, setEspIp] = React.useState('192.168.1.100');
+  const [espIp, setEspIp] = React.useState('broker.hivemq.com');
 
   const handleSave = () => {
     Alert.alert('Settings Saved', `ESP32 IP: ${espIp}`);
@@ -24,7 +24,7 @@ export default function SettingsScreen() {
               style={styles.input}
               value={espIp}
               onChangeText={setEspIp}
-              placeholder="192.168.1.100"
+              placeholder="broker.hivemq.com"
               placeholderTextColor={AqiColors.textMuted}
               keyboardType="numeric"
             />

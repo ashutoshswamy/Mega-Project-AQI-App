@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // Configure MQTT Broker - Update this with your Broker's IP
 // Note: Browser/Expo apps using 'mqtt' keys usually require WebSockets (ws:// or wss://)
 // Standard MQTT port is 1883, WebSockets usually 9001 or 8083 depending on broker config.
-const MQTT_BROKER_URL = 'ws://192.168.1.100:9001'; 
+const MQTT_BROKER_URL = 'wss://broker.hivemq.com:8884/mqtt'; 
 const MQTT_TOPIC = 'sensor/aqi';
 const CONNECTION_TIMEOUT_MS = 5000;
 
@@ -87,7 +87,7 @@ export function useAqiData() {
       }, CONNECTION_TIMEOUT_MS) as any;
 
       const client = mqtt.connect(MQTT_BROKER_URL, {
-        clientId: `aqi_app_${Math.random().toString(16).substr(2, 8)}`,
+        clientId: 'aqi-app-ashutosh',
         keepalive: 30,
         reconnectPeriod: 3000,
         connectTimeout: CONNECTION_TIMEOUT_MS,

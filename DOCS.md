@@ -159,7 +159,7 @@ const { data, loading, error, isOffline, isConnected, refresh } = useAqiData();
 **Configuration Constants:**
 | Constant | Default | Description |
 |----------|---------|-------------|
-| `MQTT_BROKER_URL` | `ws://192.168.1.100:9001` | MQTT broker WebSocket URL |
+| `MQTT_BROKER_URL` | `wss://broker.hivemq.com:8884/mqtt` | MQTT broker URL |
 | `MQTT_TOPIC` | `sensor/aqi` | Topic to subscribe to |
 | `CONNECTION_TIMEOUT_MS` | `5000` | Timeout before fallback to demo |
 
@@ -292,8 +292,8 @@ const AQI_COLORS = {
 The app uses WebSocket-based MQTT for browser/React Native compatibility:
 
 ```typescript
-const client = mqtt.connect("ws://192.168.1.100:9001", {
-  clientId: `aqi_app_${randomId}`,
+const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt", {
+  clientId: 'aqi-app-ashutosh',
   keepalive: 30,
   reconnectPeriod: 3000,
   connectTimeout: 5000,
@@ -340,8 +340,8 @@ The hook supports multiple field name variations:
 
 | Setting        | Requirement                                  |
 | -------------- | -------------------------------------------- |
-| Protocol       | WebSocket (ws:// or wss://)                  |
-| Default Port   | 9001 (Mosquitto WebSocket)                   |
+| Protocol       | Secure WebSocket (wss://)                  |
+| Default Port   | 8884                                         |
 | Authentication | Optional (configure in mqtt.connect options) |
 
 ### Mosquitto Configuration Example
@@ -409,7 +409,7 @@ allow_anonymous true
 Update in `hooks/use-aqi-data.ts`:
 
 ```typescript
-const MQTT_BROKER_URL = "ws://your-broker-ip:port";
+const MQTT_BROKER_URL = "wss://broker.hivemq.com:8884/mqtt";
 ```
 
 ### Testing Without Sensor

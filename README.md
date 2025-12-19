@@ -94,11 +94,11 @@ aqi-app/
 The app connects to an MQTT broker to receive sensor data. Update the broker URL in `hooks/use-aqi-data.ts`:
 
 ```typescript
-const MQTT_BROKER_URL = "ws://192.168.1.100:9001"; // Your broker IP
+const MQTT_BROKER_URL = "wss://broker.hivemq.com:8884/mqtt"; // Remote broker
 const MQTT_TOPIC = "sensor/aqi";
 ```
 
-> **Note:** The app uses WebSocket protocol (`ws://` or `wss://`) for MQTT connections, as standard MQTT ports don't work in React Native/browser environments.
+> **Note:** The app is configured to use the public HiveMQ broker via Secure WebSockets (wss) on port 8884.
 
 ### Expected Sensor Data Format
 
