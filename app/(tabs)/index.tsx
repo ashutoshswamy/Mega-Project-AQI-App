@@ -52,8 +52,15 @@ export default function HomeScreen() {
           <Text style={styles.loadingText}>
             {isLoadingSettings
               ? "Loading settings..."
+              : isConnected
+              ? "Waiting for sensor data..."
               : "Connecting to sensor..."}
           </Text>
+          {isConnected && (
+            <Text style={styles.waitingHint}>
+              Connected to broker. Waiting for messages on topic.
+            </Text>
+          )}
         </View>
       </SafeAreaView>
     );
@@ -215,6 +222,14 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 16,
     fontFamily: PoppinsFonts.regular,
+  },
+  waitingHint: {
+    color: AqiColors.textSecondary,
+    marginTop: 8,
+    fontSize: 12,
+    fontFamily: PoppinsFonts.regular,
+    opacity: 0.7,
+    textAlign: "center",
   },
   errorIcon: {
     fontSize: 48,

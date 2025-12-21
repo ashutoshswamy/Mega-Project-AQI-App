@@ -9,7 +9,7 @@ const MQTT_TOPIC_KEY = "mqtt_topic";
 // Default values
 export const DEFAULT_MQTT_BROKER_URL = "broker.hivemq.com";
 export const DEFAULT_MQTT_PORT = "8884";
-export const DEFAULT_MQTT_TOPIC = "sensor/aqi";
+export const DEFAULT_MQTT_TOPIC = "ashutosh/aqi/sen55";
 
 export interface MqttSettings {
   brokerUrl: string;
