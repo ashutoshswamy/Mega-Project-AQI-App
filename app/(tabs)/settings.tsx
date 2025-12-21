@@ -1,34 +1,55 @@
-import { AqiColors, PoppinsFonts } from '@/constants/theme';
-import { useMqttSettings } from '@/hooks/use-mqtt-settings';
-import React from 'react';
-import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { AqiColors, PoppinsFonts } from "@/constants/theme";
+import { useMqttSettings } from "@/hooks/use-mqtt-settings";
+import React from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
-  const { settings, isLoading, isSaving, updateSetting, save, resetToDefaults } = useMqttSettings();
+  const {
+    settings,
+    isLoading,
+    isSaving,
+    updateSetting,
+    save,
+    resetToDefaults,
+  } = useMqttSettings();
 
   const handleSave = async () => {
     const success = await save();
     if (success) {
-      Alert.alert('Settings Saved', 'MQTT configuration has been updated. The app will use these settings on next connection.');
+      Alert.alert(
+        "Settings Saved",
+        "MQTT configuration has been updated. The app will use these settings on next connection."
+      );
     } else {
-      Alert.alert('Error', 'Failed to save settings. Please try again.');
+      Alert.alert("Error", "Failed to save settings. Please try again.");
     }
   };
 
   const handleReset = () => {
     Alert.alert(
-      'Reset to Defaults',
-      'Are you sure you want to reset MQTT settings to default values?',
+      "Reset to Defaults",
+      "Are you sure you want to reset MQTT settings to default values?",
       [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Reset', 
-          style: 'destructive',
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Reset",
+          style: "destructive",
           onPress: () => {
             resetToDefaults();
-            Alert.alert('Reset Complete', 'Settings have been reset to defaults. Tap Save to apply.');
-          }
+            Alert.alert(
+              "Reset Complete",
+              "Settings have been reset to defaults. Tap Save to apply."
+            );
+          },
         },
       ]
     );
@@ -49,31 +70,45 @@ export default function SettingsScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Settings</Text>
-        
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>MQTT CONNECTION</Text>
-          
+
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Broker URL</Text>
             <TextInput
               style={styles.input}
               value={settings.brokerUrl}
-              onChangeText={(value) => updateSetting('brokerUrl', value)}
-              placeholder="wss://broker.hivemq.com:8884/mqtt"
+              onChangeText={(value) => updateSetting("brokerUrl", value)}
+              placeholder="broker.hivemq.com"
               placeholderTextColor={AqiColors.textMuted}
               autoCapitalize="none"
               autoCorrect={false}
-              keyboardType="url"
             />
-            <Text style={styles.hint}>WebSocket URL (ws:// or wss://)</Text>
+            <Text style={styles.hint}>Broker address (without protocol)</Text>
           </View>
-          
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Port</Text>
+            <TextInput
+              style={styles.input}
+              value={settings.port}
+              onChangeText={(value) => updateSetting("port", value)}
+              placeholder="8884"
+              placeholderTextColor={AqiColors.textMuted}
+              keyboardType="numeric"
+            />
+            <Text style={styles.hint}>
+              WebSocket port (typically 8884 for WSS)
+            </Text>
+          </View>
+
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Topic</Text>
             <TextInput
               style={styles.input}
               value={settings.topic}
-              onChangeText={(value) => updateSetting('topic', value)}
+              onChangeText={(value) => updateSetting("topic", value)}
               placeholder="sensor/aqi"
               placeholderTextColor={AqiColors.textMuted}
               autoCapitalize="none"
@@ -81,18 +116,18 @@ export default function SettingsScreen() {
             />
             <Text style={styles.hint}>MQTT topic to subscribe to</Text>
           </View>
-          
+
           <View style={styles.buttonRow}>
-            <TouchableOpacity 
-              style={styles.resetButton} 
+            <TouchableOpacity
+              style={styles.resetButton}
               onPress={handleReset}
               disabled={isSaving}
             >
               <Text style={styles.resetButtonText}>Reset</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[styles.saveButton, isSaving && styles.saveButtonDisabled]} 
+
+            <TouchableOpacity
+              style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
               onPress={handleSave}
               disabled={isSaving}
             >
@@ -104,7 +139,7 @@ export default function SettingsScreen() {
             </TouchableOpacity>
           </View>
         </View>
-        
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>ABOUT</Text>
           <Text style={styles.aboutText}>AQI Monitor v1.0.0</Text>
@@ -122,8 +157,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     color: AqiColors.textSecondary,
@@ -177,16 +212,16 @@ const styles = StyleSheet.create({
     fontFamily: PoppinsFonts.regular,
   },
   buttonRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginTop: 8,
   },
   resetButton: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     borderRadius: 12,
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
     borderWidth: 1,
     borderColor: AqiColors.cardBorder,
   },
@@ -200,13 +235,13 @@ const styles = StyleSheet.create({
     backgroundColor: AqiColors.accent,
     borderRadius: 12,
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   saveButtonDisabled: {
     opacity: 0.6,
   },
   saveButtonText: {
-    color: '#000',
+    color: "#000",
     fontSize: 16,
     fontFamily: PoppinsFonts.semiBold,
   },

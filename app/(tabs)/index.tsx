@@ -1,27 +1,44 @@
-import { AqiGauge, MetricCard } from '@/components/aqi';
-import { AqiColors, PoppinsFonts } from '@/constants/theme';
-import { getTimeSinceUpdate, useAqiData } from '@/hooks/use-aqi-data';
-import { DEFAULT_MQTT_BROKER_URL, DEFAULT_MQTT_TOPIC, useMqttSettings } from '@/hooks/use-mqtt-settings';
-import { Cloud, Droplets, Flame, Thermometer, Wind } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { AqiGauge, MetricCard } from "@/components/aqi";
+import { AqiColors, PoppinsFonts } from "@/constants/theme";
+import { getTimeSinceUpdate, useAqiData } from "@/hooks/use-aqi-data";
+import {
+  DEFAULT_MQTT_BROKER_URL,
+  DEFAULT_MQTT_PORT,
+  DEFAULT_MQTT_TOPIC,
+  useMqttSettings,
+} from "@/hooks/use-mqtt-settings";
+import { Cloud, Droplets, Flame, Thermometer, Wind } from "lucide-react-native";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const { settings, isLoading: isLoadingSettings } = useMqttSettings();
-  
+
   // Use settings or defaults while loading
-  const brokerUrl = isLoadingSettings ? DEFAULT_MQTT_BROKER_URL : settings.brokerUrl;
+  const brokerUrl = isLoadingSettings
+    ? DEFAULT_MQTT_BROKER_URL
+    : settings.brokerUrl;
+  const port = isLoadingSettings ? DEFAULT_MQTT_PORT : settings.port;
   const topic = isLoadingSettings ? DEFAULT_MQTT_TOPIC : settings.topic;
-  
-  const { data, loading, error, isOffline, lastUpdated, isConnected, refresh } = useAqiData({ brokerUrl, topic });
-  const [timeSince, setTimeSince] = useState('Never');
+
+  const { data, loading, error, isOffline, lastUpdated, isConnected, refresh } =
+    useAqiData({ brokerUrl, port, topic });
+  const [timeSince, setTimeSince] = useState("Never");
 
   // Update time since every second for live display
   useEffect(() => {
     const updateTime = () => setTimeSince(getTimeSinceUpdate(lastUpdated));
     updateTime();
-    
+
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, [lastUpdated]);
@@ -33,7 +50,9 @@ export default function HomeScreen() {
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color={AqiColors.accent} />
           <Text style={styles.loadingText}>
-            {isLoadingSettings ? 'Loading settings...' : 'Connecting to sensor...'}
+            {isLoadingSettings
+              ? "Loading settings..."
+              : "Connecting to sensor..."}
           </Text>
         </View>
       </SafeAreaView>
@@ -63,7 +82,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -74,13 +93,11 @@ export default function HomeScreen() {
           />
         }
       >
-
-
         {/* AQI Gauge */}
         {data && (
-          <AqiGauge 
-            aqi={data.aqi} 
-            category={data.aqi_category} 
+          <AqiGauge
+            aqi={data.aqi}
+            category={data.aqi_category}
             lastUpdated={timeSince}
           />
         )}
@@ -88,13 +105,15 @@ export default function HomeScreen() {
         {/* Offline Banner */}
         {isOffline && (
           <View style={styles.offlineBanner}>
-            <Text style={styles.offlineText}>⚡ Offline - Showing last known data</Text>
+            <Text style={styles.offlineText}>
+              ⚡ Offline - Showing last known data
+            </Text>
           </View>
         )}
 
         {/* Detailed Metrics */}
         <Text style={styles.sectionTitle}>DETAILED METRICS</Text>
-        
+
         {data && (
           <View style={styles.metricsGrid}>
             {/* Row 1 */}
@@ -187,8 +206,8 @@ const styles = StyleSheet.create({
   },
   centerContent: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 40,
   },
   loadingText: {
@@ -210,7 +229,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: AqiColors.textSecondary,
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 24,
     fontFamily: PoppinsFonts.regular,
   },
@@ -221,21 +240,21 @@ const styles = StyleSheet.create({
     borderRadius: 24,
   },
   retryText: {
-    color: '#000',
+    color: "#000",
     fontFamily: PoppinsFonts.semiBold,
     fontSize: 16,
   },
 
   offlineBanner: {
-    backgroundColor: 'rgba(234, 179, 8, 0.2)',
+    backgroundColor: "rgba(234, 179, 8, 0.2)",
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 8,
     marginBottom: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   offlineText: {
-    color: '#EAB308',
+    color: "#EAB308",
     fontSize: 13,
     fontFamily: PoppinsFonts.regular,
   },
@@ -251,7 +270,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   metricsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   metricGap: {
     width: 12,
